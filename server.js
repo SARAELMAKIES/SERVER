@@ -39,7 +39,6 @@ connectToDb()
 app.use(PrintToLog)
 
 app.use(express.json())
-
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRouter);
 
