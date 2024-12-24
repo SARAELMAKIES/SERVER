@@ -4,6 +4,7 @@ import userRouter from "./routers/user.js";
 import { connectToDb } from "./config/DB.js";
 import dotenv from "dotenv"
 import fs from "fs/promises";
+import cors from "cors"
 async function PrintToLog(req, res, next) {
 
     try {
@@ -37,7 +38,7 @@ dotenv.config()
 const app = express();
 connectToDb()
 app.use(PrintToLog)
-
+app.use(cors())
 app.use(express.json())
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRouter);
