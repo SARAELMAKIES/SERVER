@@ -1,69 +1,101 @@
 import { userModel } from "../models/user.js"
-
-export async function getAllUsers(req,res) {
+//שליפת כל המשתמשים 
+export const getAllUser = async (req, res) => {
     try {
-        let data = await userModel.find();
+        let data = await userModel.find().select('-password');
         res.json(data);
     }
     catch (err) {
-        console.log(err)
-        res.status(400).json({ title: "cannot get all users", message: err.message })
+        console.log(err);
+        res.status(400).json({ title: "cannot get all user", message: err.message })
+
     }
 }
+//שליפת משתמש לפי ID
 
-export async function getById(req,res) {
+export const getById = async (req, res) => {
     let { id } = req.params;
     try {
-        let data = await userModel.findById(id);
-        if (!data)
-            return res.status(404).json({ title: "cannot find by id", message: "user with such id not found" })
+        let data = await userModel.findById(id).select('-password');
+        if (!data) return res.status(404).json({ title: "cannot find by id", message: "user with such id not found" });
         res.json(data);
+    } catch (err) {
+        console.log(err);
+        res.status(400).json({ title: "cannot get by id", message: err.message });
+    }
+};
+//הוספת משתמש
+export const addUser = async (req, res) => {
+    let { body } = req;
+    if (!body.password || !body.email)
+        return res.status(400).json({ title: "cannot add user", message: "password, email are require" })
+    try {
+        let newUser = new userModel(body);
+        await newUser.save();
+        res.json(newUser);
     }
     catch (err) {
         console.log(err)
-        res.status(400).json({ title: "cannot get all users", message: err.message })
+        res.status(400).json({ title: "cannot add this user", message: err.message })
     }
 }
-export async function update(req,res) {
 
+//עדכון פרטי משתמש ללא סיסמא
+
+export const update = async (req, res) => {
     let { id } = req.params;
+    let body = req.body;
+    if (body.password)
+        return res.status(404).json({ title: "cannot update password", message: "cannot update here password" })
     try {
-        let data = await userModel.findByIdAndUpdate(id, req.body, { new: true });
-        if (!data)
-            return res.status(404).json({ title: "cannot find by id", message: "user with such id not found" })
+        let data = await userModel.findByIdAndUpdate(id, body, { new: true }).select('-password');
+        if (!data) return res.status(404).json({ title: "cannot update by id", message: "user with such id not found" });
         res.json(data);
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err)
-        res.status(400).json({ title: "cannot update user", message: err.message })
+        res.status(400).json({ title: "cannot update", message: err.message });
     }
 }
-export async function add_signUp(req,res) {
-
-    if (!req.body.username || !req.body.email || !req.body.password || !req.body.phone)
-        return res.status(404).json({ title: "cmissing parameters", message: "username email password phone are required" })
+//עדכון  סיסמא
+export const updatePassword = async (req, res) => {
+    let { id } = req.params;
+    let body = req.body;
+    if (!body.password || body.userName || body.email)
+      return  res.status(404).json({ title: "only update password", message: "cannot update email userName" })
     try {
-
-        let newwUser = new userModel(req.body);
-        await newwUser.save();
-        res.json(newwUser)
-
-    }
-    catch (err) {
-        console.log(err)
-        res.status(400).json({ title: "cannot add", message: err.message })
-    }
-}
-export async function getUserByUsernamePassword_Login(req,res) {
-
-    try {
-        let data = await userModel.findOne({ password: req.body.password, username: req.body.username });
-        if (!data)
-            return res.status(404).json({ title: "cannot find user with such details", message: "wrong username or password" })
+        let data = await userModel.findByIdAndUpdate(id, { password: body.password }, { new: true }).select('-password');
+        if (!data) return res.status(404).json({ title: "cannot update by id", message: "user with such id not found" });
         res.json(data);
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err)
-        res.status(400).json({ title: "cannot log in user", message: err.message })
+        res.status(400).json({ title: "cannot update", message: err.message });
     }
 }
+
+
+//כניסה 
+export async function getUserByUsernamePassword_Login(req, res) {
+    try {
+        let data = await userModel.findOne({
+            password: req.body.password,
+            username: req.body.userName
+        }).select('-password');
+
+        if (!data) {
+            return res.status(404).json({
+                title: "cannot find user with such details",
+                message: "wrong username or password"
+            });
+        }
+
+        res.json(data);
+    } catch (err) {
+        console.log(err);
+        res.status(400).json({
+            title: "cannot log in user",
+            message: err.message
+        });
+    }
+}
+
+

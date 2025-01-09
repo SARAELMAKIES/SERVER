@@ -1,2 +1,2 @@
  9.12.2024 POST /api/user/login
- 9.12.2024 POST /api/user/login
+ 9.12.2024 POST /api/user/login 7.1.2025 PUT /courses/60d5ec49f2c2df3f0c0a1234 7.1.2025 GET /courses/60d5ec49f2c2df3f0c0a1234 7.1.2025 GET /courses/60d5ec49f2c2df3f0c0a1234 7.1.2025 GET /courses/60d5ec49f2c2df3f0c0a1234 7.1.2025 GET /courses/60d5ec49f2c2df3f0c0a1234 7.1.2025 GET /courses/60d5ec49f2c2df3f0c0a1234 7.1.2025 PUT /courses
