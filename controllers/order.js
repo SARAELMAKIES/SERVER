@@ -2,8 +2,9 @@ import { orderModel } from "../models/order.js"
 import { userModel } from "../models/user.js"
 //שליפת כל ההזמנות
 export const getAllOrders = async (req, res) => {
+    let { limit = 2, page = 1 } = req.query;
     try {
-        let data = await orderModel.find();
+        let data = await orderModel.find().skip((page - 1) * limit).limit(limit);
         res.json(data);
     }
     catch (err) {
@@ -16,7 +17,7 @@ export const getAllOrders = async (req, res) => {
 
 export const addOrder = async (req, res) => {
     let { body } = req;
-    if (!body.address || !body.products.length || !body.userId)
+    if (!body.address || !body.products || !body.userId)
         return res.status(404).json({ title: "cannot add orders", message: "address,products,userId are require" })
 
 
@@ -30,7 +31,7 @@ export const addOrder = async (req, res) => {
     }
     catch (err) {
         console.log(err)
-        res.status(400).json({ title: "cannot add this order", message: err.message })
+        return res.status(400).json({ title: "cannot add this order", message: err.message })
     }
 }
 

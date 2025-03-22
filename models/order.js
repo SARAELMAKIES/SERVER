@@ -2,8 +2,6 @@ import { Schema, Types, model } from "mongoose"
 import { productSchema } from "./product.js"
 
 
-
-
 const minimalSchema = Schema({
     product: productSchema,
     count: { type: Number, default: 0 }
